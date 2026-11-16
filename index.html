@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1d6fd8">
+<meta name="description" content="パグたちが世界一を目指す陸上競技ゲーム。100m走から4×100mリレーまで全7競技。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="パグオリ">
+<meta name="format-detection" content="telephone=no">
+<title>パグパグオリンピック ～世界一のパグを目指せ！～</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game" aria-label="ゲーム画面"></canvas>
+
+  <!-- 1. タイトル -->
+  <section id="screen-title" class="screen">
+    <div class="title-wrap">
+      <div class="title-logo">
+        <div class="logo-sub">PUG PUG OLYMPIC</div>
+        <h1>パグパグ<br>オリンピック</h1>
+        <div class="logo-tag">～世界一のパグを目指せ！～</div>
+      </div>
+      <div class="menu-col">
+        <button class="btn btn-big btn-gold" data-nav="tournament-entry">🏆 大会モード</button>
+        <button class="btn btn-big btn-blue" data-nav="single">🏃 競技にチャレンジ</button>
+        <button class="btn btn-mid btn-green hidden" id="btnResumeTournament">▶ 大会のつづきから</button>
+        <div class="row2">
+          <button class="btn btn-mid btn-white" data-nav="records">📖 記録室</button>
+          <button class="btn btn-mid btn-white" data-nav="options">⚙ オプション</button>
+        </div>
+      </div>
+      <div class="tap-note">タップで音が鳴ります 🔊</div>
+    </div>
+  </section>
+
+  <!-- 2. 選手選択 -->
+  <section id="screen-select" class="screen panel-screen">
+    <header class="scr-head"><button class="btn-back" data-back>‹</button><h2>選手をえらぶ</h2></header>
+    <div class="scroll">
+      <div id="pugList" class="pug-list"></div>
+    </div>
+    <footer class="scr-foot"><button class="btn btn-big btn-gold" id="btnSelectOk">この選手にきめた！</button></footer>
+  </section>
+
+  <!-- 3. 競技選択 -->
+  <section id="screen-events" class="screen panel-screen">
+    <header class="scr-head"><button class="btn-back" data-back>‹</button><h2>競技をえらぶ</h2></header>
+    <div class="scroll">
+      <div class="cur-pug" id="curPugBar"></div>
+      <div id="eventList" class="event-list"></div>
+    </div>
+  </section>
+
+  <!-- 4. 競技説明 -->
+  <section id="screen-howto" class="screen panel-screen">
+    <header class="scr-head"><button class="btn-back" data-back>‹</button><h2 id="howtoTitle">競技説明</h2></header>
+    <div class="scroll">
+      <div id="howtoBody" class="howto"></div>
+    </div>
+    <footer class="scr-foot"><button class="btn btn-big btn-gold" id="btnHowtoStart">スタート！</button></footer>
+  </section>
+
+  <!-- 5. プレイ（キャンバス上のUI） -->
+  <section id="screen-play" class="screen play-screen">
+    <button id="btnPause" class="btn-pause" aria-label="一時停止">II</button>
+    <div id="controls" class="controls"></div>
+    <div id="playOverlay" class="play-overlay hidden"></div>
+  </section>
+
+  <!-- 6. 競技結果 -->
+  <section id="screen-result" class="screen panel-screen">
+    <header class="scr-head"><h2 id="resultTitle">結果</h2></header>
+    <div class="scroll"><div id="resultBody"></div></div>
+    <footer class="scr-foot" id="resultFoot"></footer>
+  </section>
+
+  <!-- 7. 大会 -->
+  <section id="screen-tournament" class="screen panel-screen">
+    <header class="scr-head"><button class="btn-back hidden" id="btnTourBack" data-back>‹</button><h2 id="tourTitle">大会</h2></header>
+    <div class="scroll"><div id="tourBody"></div></div>
+    <footer class="scr-foot" id="tourFoot"></footer>
+  </section>
+
+  <!-- 8. 記録室 -->
+  <section id="screen-records" class="screen panel-screen">
+    <header class="scr-head"><button class="btn-back" data-back>‹</button><h2>記録室</h2></header>
+    <div class="scroll"><div id="recordsBody"></div></div>
+  </section>
+
+  <!-- 9. オプション -->
+  <section id="screen-options" class="screen panel-screen">
+    <header class="scr-head"><button class="btn-back" data-back>‹</button><h2>オプション</h2></header>
+    <div class="scroll"><div id="optionsBody"></div></div>
+  </section>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div id="modalText" class="modal-text"></div>
+      <div id="modalBtns" class="modal-btns"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+</div>
+
+<noscript>このゲームを遊ぶには JavaScript を有効にしてください。</noscript>
+
+<script src="js/saveManager.js"></script>
+<script src="js/soundManager.js"></script>
+<script src="js/inputManager.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/character.js"></script>
+<script src="js/scoreManager.js"></script>
+<script src="js/gameEngine.js"></script>
+<script src="js/competition/base.js"></script>
+<script src="js/competition/fieldBase.js"></script>
+<script src="js/competition/sprint100.js"></script>
+<script src="js/competition/hurdles110.js"></script>
+<script src="js/competition/longJump.js"></script>
+<script src="js/competition/javelin.js"></script>
+<script src="js/competition/highJump.js"></script>
+<script src="js/competition/run400.js"></script>
+<script src="js/competition/relay.js"></script>
+<script src="js/ceremony.js"></script>
+<script src="js/tournament.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
